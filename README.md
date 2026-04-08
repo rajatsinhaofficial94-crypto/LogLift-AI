@@ -58,7 +58,7 @@ LogLift is a **Progressive Web App** — it installs directly to your Android ho
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/LogLift.git
+git clone https://github.com/rajatsinhaofficial94-crypto/LogLift.git
 cd LogLift/app-preview
 
 # Install dependencies
