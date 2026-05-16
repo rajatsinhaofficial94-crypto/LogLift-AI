@@ -41,7 +41,7 @@ const Chatbot = () => {
       });
     });
     const exerciseList = Object.entries(exerciseByPart)
-      .map(([part, names]) => `${part}: ${names.slice(0, 10).join(', ')}`)
+      .map(([part, names]) => `${part}: ${names.join(', ')}`)
       .join('\n');
 
     return `
