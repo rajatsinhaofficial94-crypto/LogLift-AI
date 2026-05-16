@@ -30,11 +30,29 @@ const Chatbot = () => {
 
   const buildSystemContext = () => {
     const recentWorkouts = history.slice(-3).map(w => `${w.name || 'Workout'} on ${new Date(w.date).toLocaleDateString()}`).join(', ');
+    
+    // Build a concise exercise list grouped by body part for the AI to reference
+    const exerciseByPart = {};
+    exercises.forEach(ex => {
+      const parts = (ex.bodyPart || 'Other').split(',').map(p => p.trim());
+      parts.forEach(part => {
+        if (!exerciseByPart[part]) exerciseByPart[part] = [];
+        exerciseByPart[part].push(ex.name);
+      });
+    });
+    const exerciseList = Object.entries(exerciseByPart)
+      .map(([part, names]) => `${part}: ${names.slice(0, 10).join(', ')}`)
+      .join('\n');
+
     return `
-You are a fitness assistant inside a workout tracking app called LogLift. Your ONLY job is to answer the user's question and then STOP. Do not simulate a conversation, do not role-play as the user, do not add follow-up prompts or fake UI elements, and do not invent workout logs or rating systems.
+You are a fitness assistant inside a workout tracking app called LogLift. Your ONLY job is to answer the user's question and then STOP. Do not simulate a conversation, do not role-play as the user, do not add follow-up prompts or fake UI elements.
+
+IMPORTANT: You MUST only suggest exercises from the following list. Do not invent exercise names that are not in this list.
+
+Available exercises by body part:
+${exerciseList}
 
 User context:
-- They have access to ${exercises.length} exercises in the app.
 - They have completed ${history.length} workouts total.
 - Recent workouts: ${recentWorkouts || 'None yet'}.
 
