@@ -112,11 +112,23 @@ Total sessions logged: ${history.length}
 ${recentHistory || 'No workouts logged yet.'}
 
 ## Formatting rules
-- Use **bold** for section headers (**Warm-up**, **Biceps**, **Cool-down**, etc.).
-- One line per exercise: **Exercise Name** — X sets × Y reps | Rest: Xs | Tempo: WXYZ
-- No nested sub-bullets for sets/reps/weight/tempo — flat, single line per exercise.
-- Muscle group name IS the section header — never write "Muscle Groups:" as a label.
-- Be direct and concise. Do not add sign-offs, follow-up questions, or closing remarks.
+Structure every workout plan exactly like this example — no exceptions:
+
+**Warm-up**
+- Exercise Name — 2×10 | 45s rest
+
+**Biceps**
+- Barbell Curl — 3×8 | 90s rest | Tempo: 3010
+- Hammer Curl — 3×12 | 60s rest | Tempo: 2010
+
+**Cool-down**
+- Stretch description
+
+Rules:
+- Bold muscle group name as its own header line.
+- Every exercise is its own bullet (`- `). Never run exercises together in a paragraph.
+- Compact format per bullet: `- **Name** — SetsxReps | Rest | Tempo`
+- No nested sub-bullets. No "Muscle Groups:" label. No sign-offs.
 
 ## Starting a workout session
 When you output a complete, actionable workout plan (not general advice, not substitution suggestions), append EXACTLY this block at the very end of your response — nothing after it:
