@@ -539,6 +539,41 @@ input::placeholder {
   border-bottom-left-radius: 4px;
 }
 
+/* Markdown formatting inside the model bubble */
+.message-bubble.model p {
+  margin-bottom: 0.6rem;
+}
+.message-bubble.model p:last-child {
+  margin-bottom: 0;
+}
+.message-bubble.model strong {
+  color: white;
+  font-weight: 700;
+}
+.message-bubble.model ul,
+.message-bubble.model ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.6rem;
+}
+.message-bubble.model ul {
+  list-style-type: disc;
+}
+.message-bubble.model ol {
+  list-style-type: decimal;
+}
+.message-bubble.model li {
+  margin-bottom: 0.2rem;
+  line-height: 1.5;
+}
+.message-bubble.model h1,
+.message-bubble.model h2,
+.message-bubble.model h3 {
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.4rem;
+  margin-top: 0.6rem;
+}
+
 .chatbot-input-area {
   display: flex;
   gap: 8px;

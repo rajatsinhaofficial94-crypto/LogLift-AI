@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 
 const Chatbot = () => {
@@ -36,7 +37,7 @@ const Chatbot = () => {
       - The app has a database of ${exercises.length} exercises.
       - The user has completed ${history.length} workouts.
       - Recent workouts: ${recentWorkouts || 'None yet'}.
-      - IMPORTANT: Format your response as plain text only. Do NOT use markdown (like asterisks for bolding). Use simple newlines and spacing to make it readable.
+      - Please format your responses using clean Markdown. Use bolding and bullet points to make workouts easy to read.
     `;
   };
 
@@ -108,7 +109,13 @@ const Chatbot = () => {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message-bubble-wrapper ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`message-bubble whitespace-pre-wrap ${msg.role === 'user' ? 'user' : 'model'}`}>
-                {msg.text}
+                {msg.role === 'model' ? (
+                  <div className="prose prose-sm prose-invert max-w-none">
+                    <ReactMarkdown>{msg.text}</ReactMarkdown>
+                  </div>
+                ) : (
+                  msg.text
+                )}
               </div>
             </div>
           ))}
