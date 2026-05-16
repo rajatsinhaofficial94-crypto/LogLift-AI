@@ -29,9 +29,7 @@ const Chatbot = () => {
   }, [messages, isOpen]);
 
   const buildSystemContext = () => {
-    const recentWorkouts = history.slice(-3).map(w => `${w.name || 'Workout'} on ${new Date(w.date).toLocaleDateString()}`).join(', ');
-    
-    // Build a concise exercise list grouped by body part for the AI to reference
+    // Build exercise list grouped by body part
     const exerciseByPart = {};
     exercises.forEach(ex => {
       const parts = (ex.bodyPart || 'Other').split(',').map(p => p.trim());
@@ -43,6 +41,21 @@ const Chatbot = () => {
     const exerciseList = Object.entries(exerciseByPart)
       .map(([part, names]) => `${part}: ${names.join(', ')}`)
       .join('\n');
+
+    // Build detailed workout history (last 10 sessions)
+    const recentHistory = history.slice(-10).reverse().map(w => {
+      const date = new Date(w.date).toLocaleDateString();
+      const name = w.name || 'Workout';
+      const exerciseLines = (w.workoutExercises || []).map(ex => {
+        const completedSets = (ex.sets || []).filter(s => s.completed);
+        if (!completedSets.length) return null;
+        const setStr = completedSets.map(s =>
+          `${s.reps || '?'}reps@${s.weight || '?'}kg${s.rir !== '' && s.rir != null ? ` RIR:${s.rir}` : ''}`
+        ).join(', ');
+        return `    ${ex.exercise?.name}: ${setStr}`;
+      }).filter(Boolean).join('\n');
+      return `  ${date} — ${name}:\n${exerciseLines || '    (no sets logged)'}`;
+    }).join('\n');
 
     return `
 You are a personal fitness coach embedded in LogLift, a workout tracking app. You have exactly three jobs:
@@ -59,9 +72,9 @@ You have two sources of truth — use both together:
 ## Exercise database (by body part)
 ${exerciseList}
 
-## User context
-- Total workouts logged: ${history.length}
-- Recent sessions: ${recentWorkouts || 'None yet'}
+## User's workout history (last 10 sessions, newest first)
+Total sessions logged: ${history.length}
+${recentHistory || 'No workouts logged yet.'}
 
 ## Formatting rules
 - Use **bold** for section headers (**Warm-up**, **Biceps**, **Cool-down**, etc.).
