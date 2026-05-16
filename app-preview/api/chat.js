@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, context } = req.body;
+    const { message, context, history = [] } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -70,6 +70,7 @@ export default async function handler(req, res) {
         model: 'llama-3.1-8b-instant',
         messages: [
           { role: 'system', content: systemContent },
+          ...history,
           { role: 'user', content: message }
         ]
       })

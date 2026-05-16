@@ -121,10 +121,16 @@ List only the main working exercises in order (exclude warm-up and cool-down), u
     try {
       const contextStr = buildSystemContext();
 
+      // Build conversation history for Groq (skip the initial greeting)
+      const conversationHistory = messages.slice(1).map(m => ({
+        role: m.role === 'model' ? 'assistant' : 'user',
+        content: m.text
+      }));
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, context: contextStr })
+        body: JSON.stringify({ message: userMessage, context: contextStr, history: conversationHistory })
       });
 
       if (!response.ok) {
