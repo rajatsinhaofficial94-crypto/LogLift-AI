@@ -5,6 +5,7 @@ import HomeScreen from './components/HomeScreen';
 import ActiveWorkout from './components/ActiveWorkout';
 import CalendarView from './components/CalendarView';
 import MyLifts from './components/MyLifts';
+import Chatbot from './components/Chatbot';
 import { useWorkoutStore } from './store/useWorkoutStore';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             activeWorkout ? <ActiveWorkout /> : <Navigate to="/" />
           } />
         </Routes>
+        <Chatbot />
       </div>
     </Router>
   );
