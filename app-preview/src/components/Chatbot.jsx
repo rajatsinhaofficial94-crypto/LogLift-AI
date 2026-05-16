@@ -36,6 +36,7 @@ const Chatbot = () => {
       - The app has a database of ${exercises.length} exercises.
       - The user has completed ${history.length} workouts.
       - Recent workouts: ${recentWorkouts || 'None yet'}.
+      - IMPORTANT: Format your response as plain text only. Do NOT use markdown (like asterisks for bolding). Use simple newlines and spacing to make it readable.
     `;
   };
 
@@ -106,7 +107,7 @@ const Chatbot = () => {
         <div className="chatbot-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message-bubble-wrapper ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`message-bubble ${msg.role === 'user' ? 'user' : 'model'}`}>
+              <div className={`message-bubble whitespace-pre-wrap ${msg.role === 'user' ? 'user' : 'model'}`}>
                 {msg.text}
               </div>
             </div>
