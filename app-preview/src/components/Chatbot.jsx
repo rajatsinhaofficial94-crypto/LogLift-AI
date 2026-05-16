@@ -241,13 +241,34 @@ List only the main working exercises in order (exclude warm-up and cool-down). U
                   )}
                 </div>
                 {msg.workoutPlan && (
-                  <button
-                    className="start-workout-btn"
-                    onClick={() => handleStartWorkout(msg.workoutPlan)}
-                  >
-                    <Play size={14} />
-                    Start this workout
-                  </button>
+                  <div className="workout-plan-card">
+                    <p className="workout-plan-title">Workout Plan</p>
+                    <table className="workout-plan-table">
+                      <thead>
+                        <tr>
+                          <th>Exercise</th>
+                          <th>Sets</th>
+                          <th>Reps</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {msg.workoutPlan.map((ex, i) => (
+                          <tr key={i}>
+                            <td>{ex.name}</td>
+                            <td>{ex.sets}</td>
+                            <td>{ex.reps}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <button
+                      className="start-workout-btn"
+                      onClick={() => handleStartWorkout(msg.workoutPlan)}
+                    >
+                      <Play size={14} />
+                      Start this workout
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

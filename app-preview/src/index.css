@@ -603,6 +603,55 @@ input::placeholder {
   cursor: not-allowed;
 }
 
+.workout-plan-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  width: 100%;
+}
+.workout-plan-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-color);
+  padding: 8px 12px 4px;
+}
+.workout-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.workout-plan-table th {
+  text-align: left;
+  padding: 4px 12px;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.workout-plan-table th:not(:first-child),
+.workout-plan-table td:not(:first-child) {
+  text-align: center;
+  width: 48px;
+}
+.workout-plan-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-main);
+}
+.workout-plan-table tr:last-child td {
+  border-bottom: none;
+}
+.workout-plan-card .start-workout-btn {
+  width: 100%;
+  border-radius: 0;
+  justify-content: center;
+  border-top: 1px solid rgba(0, 229, 255, 0.2);
+}
+
 .start-workout-btn {
   display: flex;
   align-items: center;
