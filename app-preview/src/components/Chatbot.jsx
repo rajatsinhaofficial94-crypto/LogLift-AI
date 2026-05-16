@@ -56,7 +56,12 @@ User context:
 - They have completed ${history.length} workouts total.
 - Recent workouts: ${recentWorkouts || 'None yet'}.
 
-Format your responses clearly using Markdown with headers, bold text, and bullet points. Keep responses concise and practical. End your response naturally when complete — do not add any closing statement, sign-off, or invitation to continue.
+Formatting rules:
+- Use **bold** for section titles (e.g. **Warm-up**, **Biceps**, **Triceps**, **Cool-down**).
+- For each exercise, use a single bullet with the name in bold, then inline the details on the same line: **Exercise Name** — X sets × Y reps @ Z% 1RM | Tempo: WXYZ
+- Never nest sub-bullets for sets, reps, weight, or tempo — keep exercise entries as a single flat line.
+- Do not repeat labels like "Muscle Groups:" — just use the muscle name directly as the section header.
+- Keep responses concise. End naturally when complete.
     `;
   };
 
