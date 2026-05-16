@@ -32,7 +32,34 @@ const Chatbot = () => {
     if (isOpen) scrollToBottom();
   }, [messages, isOpen]);
 
-  const buildSystemContext = () => {
+  const getRelevantBodyParts = (conversationText) => {
+    const t = conversationText.toLowerCase();
+    const map = [
+      { keywords: ['bicep', 'curl', 'arm', 'arms'],            parts: ['Biceps', 'Triceps', 'Forearm'] },
+      { keywords: ['tricep', 'pushdown', 'extension', 'dip'],  parts: ['Triceps', 'Biceps', 'Forearm'] },
+      { keywords: ['leg', 'legs', 'quad', 'hamstring', 'squat', 'lunge', 'glute'], parts: ['Leg', 'Hip', 'Calf'] },
+      { keywords: ['chest', 'bench', 'push', 'pec'],           parts: ['Chest', 'Triceps', 'Shoulders'] },
+      { keywords: ['back', 'row', 'pull', 'lat', 'deadlift'],  parts: ['Back / Wing', 'Erector Spinae', 'Trapezius', 'Biceps'] },
+      { keywords: ['shoulder', 'delt', 'press', 'overhead'],   parts: ['Shoulders', 'Trapezius'] },
+      { keywords: ['abs', 'core', 'plank', 'crunch'],          parts: ['Abs'] },
+      { keywords: ['calf', 'calves'],                          parts: ['Calf', 'Leg'] },
+      { keywords: ['full body', 'whole body', 'compound'],     parts: null }, // null = send all
+    ];
+    const matched = new Set();
+    for (const { keywords, parts } of map) {
+      if (keywords.some(k => t.includes(k))) {
+        if (parts === null) return null; // full body = send all
+        parts.forEach(p => matched.add(p));
+      }
+    }
+    return matched.size > 0 ? matched : null;
+  };
+
+  const buildSystemContext = (userMessage = '') => {
+    // Detect relevant body parts from recent conversation + current message
+    const recentText = messages.slice(-6).map(m => m.text).join(' ') + ' ' + userMessage;
+    const relevantParts = getRelevantBodyParts(recentText);
+
     const exerciseByPart = {};
     exercises.forEach(ex => {
       const parts = (ex.bodyPart || 'Other').split(',').map(p => p.trim());
@@ -41,11 +68,17 @@ const Chatbot = () => {
         exerciseByPart[part].push(ex.name);
       });
     });
+
     const exerciseList = Object.entries(exerciseByPart)
-      .map(([part, names]) => `${part}: ${names.join(', ')}`)
+      .filter(([part]) => !relevantParts || relevantParts.has(part))
+      .map(([part, names]) => {
+        // Send all exercises for targeted parts, top 6 otherwise
+        const limit = (!relevantParts || relevantParts.has(part)) ? names.length : 6;
+        return `${part}: ${names.slice(0, limit).join(', ')}`;
+      })
       .join('\n');
 
-    const recentHistory = history.slice(-10).reverse().map(w => {
+    const recentHistory = history.slice(-5).reverse().map(w => {
       const date = new Date(w.date).toLocaleDateString();
       const name = w.name || 'Workout';
       const exerciseLines = (w.workoutExercises || []).map(ex => {
@@ -119,10 +152,10 @@ List only the main working exercises in order (exclude warm-up and cool-down), u
     setIsLoading(true);
 
     try {
-      const contextStr = buildSystemContext();
+      const contextStr = buildSystemContext(userMessage);
 
-      // Build conversation history for Groq (skip the initial greeting)
-      const conversationHistory = messages.slice(1).map(m => ({
+      // Last 6 messages only (3 turns), skip initial greeting
+      const conversationHistory = messages.slice(1).slice(-6).map(m => ({
         role: m.role === 'model' ? 'assistant' : 'user',
         content: m.text
       }));
