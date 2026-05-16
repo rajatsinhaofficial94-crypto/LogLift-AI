@@ -28,16 +28,17 @@ const Chatbot = () => {
     }
   }, [messages, isOpen]);
 
-  // Generate context string to eventually send to the LLM (Phase 3)
   const buildSystemContext = () => {
     const recentWorkouts = history.slice(-3).map(w => `${w.name || 'Workout'} on ${new Date(w.date).toLocaleDateString()}`).join(', ');
     return `
-      System Context:
-      - You are an AI workout assistant inside a React fitness app.
-      - The app has a database of ${exercises.length} exercises.
-      - The user has completed ${history.length} workouts.
-      - Recent workouts: ${recentWorkouts || 'None yet'}.
-      - Please format your responses using clean Markdown. Use bolding and bullet points to make workouts easy to read.
+You are a fitness assistant inside a workout tracking app called LogLift. Your ONLY job is to answer the user's question and then STOP. Do not simulate a conversation, do not role-play as the user, do not add follow-up prompts or fake UI elements, and do not invent workout logs or rating systems.
+
+User context:
+- They have access to ${exercises.length} exercises in the app.
+- They have completed ${history.length} workouts total.
+- Recent workouts: ${recentWorkouts || 'None yet'}.
+
+Format your responses clearly using Markdown with headers, bold text, and bullet points. Keep responses concise and practical. After providing your answer, simply stop.
     `;
   };
 
