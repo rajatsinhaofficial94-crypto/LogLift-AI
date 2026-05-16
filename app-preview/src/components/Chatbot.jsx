@@ -19,7 +19,7 @@ const Chatbot = () => {
   const exercises = useWorkoutStore(state => state.exercises) || [];
   const history = useWorkoutStore(state => state.history) || [];
   const startWorkout = useWorkoutStore(state => state.startWorkout);
-  const addExerciseToWorkout = useWorkoutStore(state => state.addExerciseToWorkout);
+  const addExerciseWithPrescription = useWorkoutStore(state => state.addExerciseWithPrescription);
   const updateWorkoutName = useWorkoutStore(state => state.updateWorkoutName);
 
   const toggleChat = () => setIsOpen(!isOpen);
@@ -122,21 +122,21 @@ ${recentHistory || 'No workouts logged yet.'}
 When you output a complete, actionable workout plan (not general advice, not substitution suggestions), append EXACTLY this block at the very end of your response — nothing after it:
 
 \`\`\`workout-plan
-["Exercise Name 1", "Exercise Name 2", "Exercise Name 3"]
+[{"name":"Exercise Name 1","sets":3,"reps":10},{"name":"Exercise Name 2","sets":3,"reps":12}]
 \`\`\`
 
-List only the main working exercises in order (exclude warm-up and cool-down), using exact names from the exercise database. Only include this block for full workout plans.
+List only the main working exercises in order (exclude warm-up and cool-down). Use exact names from the exercise database. Include the sets and reps you prescribed. Only add this block for full workout plans.
     `;
   };
 
-  const handleStartWorkout = (exerciseNames) => {
+  const handleStartWorkout = (plan) => {
     startWorkout();
     updateWorkoutName('AI Workout');
-    exerciseNames.forEach(name => {
+    plan.forEach(({ name, sets, reps }) => {
       const match = exercises.find(
         e => e.name.toLowerCase() === name.toLowerCase()
       );
-      if (match) addExerciseToWorkout(match.id);
+      if (match) addExerciseWithPrescription(match.id, sets, reps);
     });
     setIsOpen(false);
     navigate('/workout');

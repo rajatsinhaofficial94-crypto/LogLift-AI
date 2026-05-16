@@ -89,6 +89,30 @@ export const useWorkoutStore = create(
         set({ activeWorkout: { ...activeWorkout, date } });
       },
 
+      addExerciseWithPrescription: (exerciseId, numSets, reps) => {
+        const { activeWorkout, exercises } = get();
+        if (!activeWorkout) return;
+        const exerciseDetails = exercises.find(e => e.id === exerciseId);
+        if (!exerciseDetails) return;
+        const sets = Array.from({ length: numSets || 1 }, (_, i) => ({
+          id: `${Date.now()}-${i}`,
+          reps: reps ? String(reps) : '',
+          weight: '',
+          rir: '',
+          completed: false
+        }));
+        set({
+          activeWorkout: {
+            ...activeWorkout,
+            workoutExercises: [...activeWorkout.workoutExercises, {
+              workoutExerciseId: `${Date.now()}-ex`,
+              exercise: exerciseDetails,
+              sets
+            }]
+          }
+        });
+      },
+
       addExerciseToWorkout: (exerciseId) => {
         const { activeWorkout, exercises } = get();
         if (!activeWorkout) return;
