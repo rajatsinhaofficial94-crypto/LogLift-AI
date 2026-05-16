@@ -1,20 +1,26 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MessageCircle, X, Send, Bot, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
+
+const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/;
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'model', text: "Hi! I'm your AI workout assistant. How can I help you train today?" }
+    { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Phase 2: Gather context from the app state
   const exercises = useWorkoutStore(state => state.exercises) || [];
   const history = useWorkoutStore(state => state.history) || [];
+  const startWorkout = useWorkoutStore(state => state.startWorkout);
+  const addExerciseToWorkout = useWorkoutStore(state => state.addExerciseToWorkout);
+  const updateWorkoutName = useWorkoutStore(state => state.updateWorkoutName);
 
   const toggleChat = () => setIsOpen(!isOpen);
 
@@ -23,13 +29,10 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
-    if (isOpen) {
-      scrollToBottom();
-    }
+    if (isOpen) scrollToBottom();
   }, [messages, isOpen]);
 
   const buildSystemContext = () => {
-    // Build exercise list grouped by body part
     const exerciseByPart = {};
     exercises.forEach(ex => {
       const parts = (ex.bodyPart || 'Other').split(',').map(p => p.trim());
@@ -42,7 +45,6 @@ const Chatbot = () => {
       .map(([part, names]) => `${part}: ${names.join(', ')}`)
       .join('\n');
 
-    // Build detailed workout history (last 10 sessions)
     const recentHistory = history.slice(-10).reverse().map(w => {
       const date = new Date(w.date).toLocaleDateString();
       const name = w.name || 'Workout';
@@ -82,28 +84,47 @@ ${recentHistory || 'No workouts logged yet.'}
 - No nested sub-bullets for sets/reps/weight/tempo — flat, single line per exercise.
 - Muscle group name IS the section header — never write "Muscle Groups:" as a label.
 - Be direct and concise. Do not add sign-offs, follow-up questions, or closing remarks.
+
+## Starting a workout session
+When you output a complete, actionable workout plan (not general advice, not substitution suggestions), append EXACTLY this block at the very end of your response — nothing after it:
+
+\`\`\`workout-plan
+["Exercise Name 1", "Exercise Name 2", "Exercise Name 3"]
+\`\`\`
+
+List only the main working exercises in order (exclude warm-up and cool-down), using exact names from the exercise database. Only include this block for full workout plans.
     `;
+  };
+
+  const handleStartWorkout = (exerciseNames) => {
+    startWorkout();
+    updateWorkoutName('AI Workout');
+    exerciseNames.forEach(name => {
+      const match = exercises.find(
+        e => e.name.toLowerCase() === name.toLowerCase()
+      );
+      if (match) addExerciseToWorkout(match.id);
+    });
+    setIsOpen(false);
+    navigate('/workout');
   };
 
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    
+
     const userMessage = input;
     setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
     setInput('');
     setIsLoading(true);
-    
+
     try {
       const contextStr = buildSystemContext();
-      
+
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userMessage,
-          context: contextStr
-        })
+        body: JSON.stringify({ message: userMessage, context: contextStr })
       });
 
       if (!response.ok) {
@@ -113,12 +134,21 @@ ${recentHistory || 'No workouts logged yet.'}
 
       const data = await response.json();
       console.log('[RAG] Pinecone status:', data.pineconeStatus);
-      setMessages(prev => [...prev, { role: 'model', text: data.reply }]);
+
+      const rawReply = data.reply;
+      const planMatch = rawReply.match(WORKOUT_PLAN_REGEX);
+      let workoutPlan = null;
+      if (planMatch) {
+        try { workoutPlan = JSON.parse(planMatch[1]); } catch (e) {}
+      }
+      const displayText = rawReply.replace(WORKOUT_PLAN_REGEX, '').trim();
+
+      setMessages(prev => [...prev, { role: 'model', text: displayText, workoutPlan }]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { 
-        role: 'model', 
-        text: `Error connecting to AI: ${error.message}` 
+      setMessages(prev => [...prev, {
+        role: 'model',
+        text: `Error connecting to AI: ${error.message}`
       }]);
     } finally {
       setIsLoading(false);
@@ -127,8 +157,7 @@ ${recentHistory || 'No workouts logged yet.'}
 
   return (
     <>
-      {/* Floating Action Button */}
-      <button 
+      <button
         className={`chatbot-fab ${isOpen ? 'hidden' : ''}`}
         onClick={toggleChat}
         aria-label="Open AI Assistant"
@@ -136,9 +165,7 @@ ${recentHistory || 'No workouts logged yet.'}
         <MessageCircle size={24} />
       </button>
 
-      {/* Chat Window */}
       <div className={`chatbot-window glass-panel ${isOpen ? 'open' : ''}`}>
-        {/* Header */}
         <div className="chatbot-header">
           <div className="flex items-center gap-2">
             <Bot size={20} className="text-accent" />
@@ -149,35 +176,42 @@ ${recentHistory || 'No workouts logged yet.'}
           </button>
         </div>
 
-        {/* Messages List */}
         <div className="chatbot-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message-bubble-wrapper ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`message-bubble whitespace-pre-wrap ${msg.role === 'user' ? 'user' : 'model'}`}>
-                {msg.role === 'model' ? (
-                  <div className="prose prose-sm prose-invert max-w-none">
-                    <ReactMarkdown>{msg.text}</ReactMarkdown>
-                  </div>
-                ) : (
-                  msg.text
+              <div className="flex flex-col gap-2 max-w-[85%]">
+                <div className={`message-bubble whitespace-pre-wrap ${msg.role === 'user' ? 'user' : 'model'}`}>
+                  {msg.role === 'model' ? (
+                    <div className="prose prose-sm prose-invert max-w-none">
+                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    msg.text
+                  )}
+                </div>
+                {msg.workoutPlan && (
+                  <button
+                    className="start-workout-btn"
+                    onClick={() => handleStartWorkout(msg.workoutPlan)}
+                  >
+                    <Play size={14} />
+                    Start this workout
+                  </button>
                 )}
               </div>
             </div>
           ))}
           {isLoading && (
             <div className="message-bubble-wrapper justify-start">
-              <div className="message-bubble model opacity-70">
-                Thinking...
-              </div>
+              <div className="message-bubble model opacity-70">Thinking...</div>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
         <form className="chatbot-input-area" onSubmit={handleSend}>
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about exercises or workouts..."

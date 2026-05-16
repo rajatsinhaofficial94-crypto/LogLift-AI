@@ -602,3 +602,27 @@ input::placeholder {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.start-workout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-gradient);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-glow);
+}
+.start-workout-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.start-workout-btn:active {
+  transform: scale(0.97);
+}
