@@ -61,7 +61,8 @@ const Chatbot = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch from API');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch from API');
       }
 
       const data = await response.json();
@@ -70,7 +71,7 @@ const Chatbot = () => {
       console.error(error);
       setMessages(prev => [...prev, { 
         role: 'model', 
-        text: "Sorry, I'm having trouble connecting to my brain right now. (Make sure you deployed to Vercel and set the GEMINI_API_KEY environment variable!)" 
+        text: `Error connecting to AI: ${error.message}` 
       }]);
     } finally {
       setIsLoading(false);

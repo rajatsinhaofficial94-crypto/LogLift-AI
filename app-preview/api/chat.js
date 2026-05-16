@@ -36,7 +36,7 @@ User: ${message}
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Gemini API Error:', errorText);
-      return res.status(response.status).json({ error: 'Failed to fetch from Gemini API' });
+      return res.status(response.status).json({ error: `Gemini API Error: ${errorText}` });
     }
 
     const data = await response.json();
