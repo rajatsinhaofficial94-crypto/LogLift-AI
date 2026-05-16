@@ -56,13 +56,8 @@ export default async function handler(req, res) {
       }
     }
 
-    // --- Step 2: Build the full prompt ---
-    const fullPrompt = `
-${context || ''}
-${ragContext}
-
-User: ${message}
-`;
+    // --- Step 2: Build messages with proper system/user separation ---
+    const systemContent = [context || '', ragContext].filter(Boolean).join('\n\n');
 
     // --- Step 3: Call Groq ---
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -73,7 +68,10 @@ User: ${message}
       },
       body: JSON.stringify({
         model: 'llama-3.1-8b-instant',
-        messages: [{ role: 'user', content: fullPrompt }]
+        messages: [
+          { role: 'system', content: systemContent },
+          { role: 'user', content: message }
+        ]
       })
     });
 
