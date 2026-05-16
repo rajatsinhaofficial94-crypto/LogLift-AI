@@ -21,3 +21,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Large knowledge files (already uploaded to Pinecone, not needed in git)
+exerciseknowledge/
+*.pdf

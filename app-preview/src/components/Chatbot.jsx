@@ -87,6 +87,7 @@ Format your responses clearly using Markdown with headers, bold text, and bullet
       }
 
       const data = await response.json();
+      console.log('[RAG] Pinecone status:', data.pineconeStatus);
       setMessages(prev => [...prev, { role: 'model', text: data.reply }]);
     } catch (error) {
       console.error(error);
