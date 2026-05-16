@@ -56,7 +56,7 @@ User context:
 - They have completed ${history.length} workouts total.
 - Recent workouts: ${recentWorkouts || 'None yet'}.
 
-Format your responses clearly using Markdown with headers, bold text, and bullet points. Keep responses concise and practical. After providing your answer, simply stop.
+Format your responses clearly using Markdown with headers, bold text, and bullet points. Keep responses concise and practical. End your response naturally when complete — do not add any closing statement, sign-off, or invitation to continue.
     `;
   };
 
