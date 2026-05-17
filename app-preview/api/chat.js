@@ -10,12 +10,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const groqKey = process.env.GROQ_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const pineconeKey = process.env.PINECONE_API_KEY;
-    const pineconeHost = process.env.PINECONE_HOST; // e.g. https://loglift-knowledge-xxxx.svc.pinecone.io
+    const pineconeHost = process.env.PINECONE_HOST;
 
-    if (!groqKey) {
-      return res.status(500).json({ error: 'GROQ_API_KEY is missing' });
+    if (!anthropicKey) {
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY is missing' });
     }
 
     // --- Step 1: Query Pinecone for relevant book passages ---
@@ -56,34 +56,36 @@ export default async function handler(req, res) {
       }
     }
 
-    // --- Step 2: Build messages with proper system/user separation ---
+    // --- Step 2: Build system prompt ---
     const systemContent = [context || '', ragContext].filter(Boolean).join('\n\n');
 
-    // --- Step 3: Call Groq ---
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    // --- Step 3: Call Anthropic ---
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqKey}`
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: systemContent,
         messages: [
-          { role: 'system', content: systemContent },
           ...history,
-          { role: 'user', content: message }
-        ]
-      })
+          { role: 'user', content: message },
+        ],
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Groq API Error:', errorText);
-      return res.status(response.status).json({ error: `Groq API Error: ${errorText}` });
+      console.error('Anthropic API Error:', errorText);
+      return res.status(response.status).json({ error: `Anthropic API Error: ${errorText}` });
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
+    const reply = data.content?.[0]?.text || "I'm sorry, I couldn't generate a response.";
 
     res.status(200).json({ reply, pineconeStatus });
   } catch (error) {
