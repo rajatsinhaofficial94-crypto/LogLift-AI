@@ -4,7 +4,7 @@ import { MessageCircle, X, Send, Bot, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 
-const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/;
+const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/g;
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,6 +99,8 @@ You are a personal fitness coach embedded in LogLift, a workout tracking app. Yo
 2. **Exercise substitution** — When asked, suggest alternatives that train the same muscle group.
 3. **Progress analysis** — Analyse the user's logged history: frequency, consistency, volume, and what to prioritise next.
 
+**Critical constraint:** You can only plan ONE workout session at a time. The app lets the user start and log a single session. If asked for a multi-week or multi-day program, briefly explain the split structure (e.g. "Here's a 4-day PPL split — let's start with Day 1: Push"), then plan only today's session and offer to plan the next day when they're ready.
+
 ## Knowledge sources
 You have two sources of truth — use both together:
 - **Expert book context** (injected above when relevant): This is your primary guide. Use it to decide *which* exercises to prioritise (e.g. compound before isolation, evidence-based selections), *how* to structure sets/reps/tempo/rest, and *why* certain approaches work. Let the book's principles drive your recommendations.
@@ -173,10 +175,12 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
       console.log('[RAG] Pinecone status:', data.pineconeStatus);
 
       const rawReply = data.reply;
-      const planMatch = rawReply.match(WORKOUT_PLAN_REGEX);
+      // Extract the last workout-plan block (in case AI outputs multiple)
+      const PLAN_EXTRACT = /```workout-plan\n([\s\S]*?)\n```/g;
       let workoutPlan = null;
-      if (planMatch) {
-        try { workoutPlan = JSON.parse(planMatch[1]); } catch (e) {}
+      let match;
+      while ((match = PLAN_EXTRACT.exec(rawReply)) !== null) {
+        try { workoutPlan = JSON.parse(match[1]); } catch (e) {}
       }
       const displayText = rawReply.replace(WORKOUT_PLAN_REGEX, '').trim();
 
