@@ -39,9 +39,9 @@ export default async function handler(req, res) {
           const searchData = await searchRes.json();
           const hits = searchData.result?.hits || [];
           if (hits.length > 0) {
-            ragContext = '\n\nRelevant knowledge from expert bodybuilding books:\n' +
+            ragContext = '\n\nRelevant expert knowledge:\n' +
               hits.map((h, i) =>
-                `[${i + 1}] (Source: ${h.fields?.source || 'book'}) ${h.fields?.text || ''}`
+                `[${i + 1}] ${h.fields?.text || ''}`
               ).join('\n\n');
             pineconeStatus = `ok (${hits.length} hits)`;
           } else {
