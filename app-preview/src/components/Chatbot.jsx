@@ -111,33 +111,19 @@ ${exerciseList}
 Total sessions logged: ${history.length}
 ${recentHistory || 'No workouts logged yet.'}
 
-## Formatting rules
-Structure every workout plan exactly like this example — no exceptions:
+## When outputting a full workout plan
+The app automatically renders a clean exercise table from structured data — do NOT write out the exercise list in your text. Instead:
 
-**Warm-up**
-- Exercise Name — 2×10 | 45s rest
-
-**Biceps**
-- Barbell Curl — 3×8 | 90s rest | Tempo: 3010
-- Hammer Curl — 3×12 | 60s rest | Tempo: 2010
-
-**Cool-down**
-- Stretch description
-
-Rules:
-- Bold muscle group name as its own header line.
-- Every exercise is its own bullet (`- `). Never run exercises together in a paragraph.
-- Compact format per bullet: `- **Name** — SetsxReps | Rest | Tempo`
-- No nested sub-bullets. No "Muscle Groups:" label. No sign-offs.
-
-## Starting a workout session
-When you output a complete, actionable workout plan (not general advice, not substitution suggestions), append EXACTLY this block at the very end of your response — nothing after it:
+1. Write 1–2 sentences summarising the session (e.g. "Here's a 45-minute back day focused on vertical pulling strength.").
+2. Add a **Warm-up** bullet list and a **Cool-down** bullet list in your text (these won't appear in the table).
+3. Add any brief coaching notes (tempo rationale, rest guidance, form cues) in 1–3 sentences.
+4. Then append EXACTLY this block — nothing after it:
 
 \`\`\`workout-plan
 [{"name":"Exercise Name 1","sets":3,"reps":10},{"name":"Exercise Name 2","sets":3,"reps":12}]
 \`\`\`
 
-List only the main working exercises in order (exclude warm-up and cool-down). Use exact names from the exercise database. Include the sets and reps you prescribed. Only add this block for full workout plans.
+List only the main working exercises in the JSON (exclude warm-up and cool-down). Use exact names from the exercise database. Include the sets and reps you prescribed. Only add this block for full workout plans — not for substitution suggestions or general advice.
     `;
   };
 
