@@ -25,3 +25,7 @@ npm-debug.log*
 # Large knowledge files (already uploaded to Pinecone, not needed in git)
 exerciseknowledge/
 *.pdf
+
+# Local utility scripts (contain hardcoded API keys, run once locally)
+ingest.py
+sample_pdfs.py
