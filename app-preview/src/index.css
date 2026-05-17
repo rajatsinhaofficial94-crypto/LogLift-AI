@@ -562,8 +562,9 @@ input::placeholder {
   list-style-type: decimal;
 }
 .message-bubble.model li {
-  margin-bottom: 0.2rem;
-  line-height: 1.5;
+  margin-bottom: 0.4rem;
+  line-height: 1.6;
+  display: list-item;
 }
 .message-bubble.model h1,
 .message-bubble.model h2,

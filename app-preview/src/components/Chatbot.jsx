@@ -114,12 +114,15 @@ Total sessions logged: ${history.length}
 ${recentHistory || 'No workouts logged yet.'}
 
 ## When outputting a full workout plan
-The app automatically renders a clean exercise table from structured data — do NOT write out the exercise list in your text. Instead:
+The app renders exercises automatically as a clean table — your text must NOT contain any exercise names, sets, reps, tempo, or rest values. Violating this creates a cluttered duplicate.
 
-1. Write 1–2 sentences summarising the session (e.g. "Here's a 45-minute back day focused on vertical pulling strength.").
-2. Add a **Warm-up** bullet list and a **Cool-down** bullet list in your text (these won't appear in the table).
-3. Add any brief coaching notes (tempo rationale, rest guidance, form cues) in 1–3 sentences.
-4. Then append EXACTLY this block — nothing after it:
+Your text body must contain ONLY:
+1. One sentence intro (e.g. "Here's your push day — chest, shoulders, triceps.")
+2. Warm-up: a single line (e.g. "Warm up with 5 min light cardio and arm circles.")
+3. Cool-down: a single line (e.g. "Cool down with a chest stretch and forward fold.")
+4. One sentence of key coaching advice (e.g. "Rest 2 min between sets and focus on the eccentric.")
+
+Then append EXACTLY this block — nothing after it:
 
 \`\`\`workout-plan
 [{"name":"Exercise Name 1","sets":3,"reps":10},{"name":"Exercise Name 2","sets":3,"reps":12}]
