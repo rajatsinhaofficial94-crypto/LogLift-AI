@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { MessageCircle, X, Send, Bot, Play } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
@@ -14,7 +14,6 @@ const HINT_PROMPTS = [
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showHints, setShowHints] = useState(() => !localStorage.getItem('chatbot-hints-dismissed'));
   const [messages, setMessages] = useState([
     { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
   ]);
@@ -22,6 +21,8 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
   const exercises = useWorkoutStore(state => state.exercises) || [];
   const history = useWorkoutStore(state => state.history) || [];
@@ -29,18 +30,9 @@ const Chatbot = () => {
   const addExerciseWithPrescription = useWorkoutStore(state => state.addExerciseWithPrescription);
   const updateWorkoutName = useWorkoutStore(state => state.updateWorkoutName);
 
-  const dismissHints = () => {
-    localStorage.setItem('chatbot-hints-dismissed', '1');
-    setShowHints(false);
-  };
-
-  const toggleChat = () => {
-    if (!isOpen) dismissHints();
-    setIsOpen(!isOpen);
-  };
+  const toggleChat = () => setIsOpen(!isOpen);
 
   const handleHintClick = (prompt) => {
-    dismissHints();
     setInput(prompt);
     setIsOpen(true);
   };
@@ -222,14 +214,13 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
 
   return (
     <>
-      {showHints && !isOpen && (
+      {isHome && !isOpen && (
         <div className="chatbot-hints">
-          <button className="chatbot-hints-dismiss" onClick={dismissHints} aria-label="Dismiss">×</button>
           {HINT_PROMPTS.map((hint, i) => (
             <button
               key={i}
               className="chatbot-hint-chip"
-              style={{ animationDelay: `${i * 0.08}s` }}
+              style={{ animationDelay: `${i * 0.06}s` }}
               onClick={() => handleHintClick(hint.prompt)}
             >
               {hint.label}
