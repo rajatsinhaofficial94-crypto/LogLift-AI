@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
-import { X, TrendingUp, Calendar, AlertCircle, BarChart2, List } from 'lucide-react';
+import { X, TrendingUp, Calendar, AlertCircle, BarChart2, List, Youtube } from 'lucide-react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   AreaChart, Area 
@@ -94,9 +94,20 @@ function ExerciseHistory({ exerciseId, onClose }) {
             <span className="text-accent text-xs font-semibold uppercase tracking-wider mb-1 block">Exercise Analytics</span>
             <h2 className="title text-xl font-bold leading-tight truncate max-w-[250px] font-display uppercase tracking-widest">{exercise?.name}</h2>
           </div>
-          <button onClick={onClose} className="btn-icon bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors ml-4 shrink-0">
-            <X size={20} />
-          </button>
+          <div className="flex gap-2 ml-4 shrink-0">
+            <a
+              href={`https://www.youtube.com/results?search_query=${encodeURIComponent((exercise?.name || '') + ' tutorial')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-icon bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors"
+              title="Watch on YouTube"
+            >
+              <Youtube size={20} className="text-red-500" />
+            </a>
+            <button onClick={onClose} className="btn-icon bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors">
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {history.length > 0 && (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
-import { Plus, X, Trash2, Check, ArrowLeft, History } from 'lucide-react';
+import { Plus, X, Trash2, Check, ArrowLeft, History, Youtube } from 'lucide-react';
 import { format } from 'date-fns';
 import ExerciseSelector from './ExerciseSelector';
 import ExerciseHistory from './ExerciseHistory';
@@ -129,6 +129,15 @@ function ActiveWorkout() {
                 <p className="text-muted text-xs">{we.exercise.bodyPart}</p>
               </div>
               <div className="flex gap-2">
+                <a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(we.exercise.name + ' tutorial')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-icon btn-secondary p-2"
+                  title="Watch on YouTube"
+                >
+                  <Youtube size={16} className="text-red-500" />
+                </a>
                 <button onClick={() => setHistoryExerciseId(we.exercise.id)} className="btn-icon btn-secondary p-2" title="View History">
                   <History size={16} className="text-accent" />
                 </button>
