@@ -6,8 +6,15 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 
 const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/g;
 
+const HINT_PROMPTS = [
+  { label: "Create my training plan", prompt: "Create a training plan for me" },
+  { label: "Get exercise advice", prompt: "What exercises should I focus on?" },
+  { label: "Review my progress", prompt: "Review my workout progress" },
+];
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showHints, setShowHints] = useState(() => !localStorage.getItem('chatbot-hints-dismissed'));
   const [messages, setMessages] = useState([
     { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
   ]);
@@ -22,7 +29,21 @@ const Chatbot = () => {
   const addExerciseWithPrescription = useWorkoutStore(state => state.addExerciseWithPrescription);
   const updateWorkoutName = useWorkoutStore(state => state.updateWorkoutName);
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  const dismissHints = () => {
+    localStorage.setItem('chatbot-hints-dismissed', '1');
+    setShowHints(false);
+  };
+
+  const toggleChat = () => {
+    if (!isOpen) dismissHints();
+    setIsOpen(!isOpen);
+  };
+
+  const handleHintClick = (prompt) => {
+    dismissHints();
+    setInput(prompt);
+    setIsOpen(true);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -201,6 +222,23 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
 
   return (
     <>
+      {showHints && !isOpen && (
+        <div className="chatbot-hints">
+          <button className="chatbot-hints-dismiss" onClick={dismissHints} aria-label="Dismiss">×</button>
+          {HINT_PROMPTS.map((hint, i) => (
+            <button
+              key={i}
+              className="chatbot-hint-chip"
+              style={{ animationDelay: `${i * 0.08}s` }}
+              onClick={() => handleHintClick(hint.prompt)}
+            >
+              {hint.label}
+              <span className="chatbot-hint-arrow">→</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <button
         className={`chatbot-fab ${isOpen ? 'hidden' : ''}`}
         onClick={toggleChat}
