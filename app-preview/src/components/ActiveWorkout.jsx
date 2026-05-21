@@ -112,7 +112,7 @@ function ActiveWorkout() {
             />
           </div>
         </div>
-        <button onClick={handleFinish} className="btn badge-primary px-3 py-1.5 shrink-0 text-[10px] font-black uppercase tracking-widest">
+        <button onClick={handleFinish} className="btn btn-primary px-5 py-2 shrink-0 text-sm font-black uppercase tracking-widest">
           Finish
         </button>
       </div>
@@ -298,9 +298,13 @@ function ActiveWorkout() {
             </button>
           )}
 
-          <button 
-            onClick={handleCancelClick} 
-            className={`text-sm font-semibold p-4 text-center mt-4 w-full transition-all rounded-xl ${cancelConfirm ? 'bg-red-500/10 text-red-500' : 'text-red-400'}`}
+          <button onClick={handleFinish} className="btn btn-primary w-full p-4 text-base font-black uppercase tracking-widest mt-4">
+            Finish Workout
+          </button>
+
+          <button
+            onClick={handleCancelClick}
+            className={`text-sm font-semibold p-4 text-center mt-2 w-full transition-all rounded-xl ${cancelConfirm ? 'bg-red-500/10 text-red-500' : 'text-red-400'}`}
           >
             {cancelConfirm ? "TAP AGAIN TO DISCARD CHANGES" : (activeWorkout.isEditing ? "Exit Without Saving" : "Cancel Session")}
           </button>
