@@ -247,7 +247,16 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
                       <tbody>
                         {msg.workoutPlan.map((ex, i) => (
                           <tr key={i}>
-                            <td>{ex.name}</td>
+                            <td>
+                              <a
+                                href={`https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' tutorial')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: 'inherit', textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.3)' }}
+                              >
+                                {ex.name}
+                              </a>
+                            </td>
                             <td>{ex.sets}</td>
                             <td>{ex.reps}</td>
                           </tr>
