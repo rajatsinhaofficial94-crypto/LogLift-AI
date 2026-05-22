@@ -782,3 +782,49 @@ input::placeholder {
 .start-workout-btn:active {
   transform: scale(0.97);
 }
+
+.model-toggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+.model-pill {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0.03em;
+}
+.model-pill.active {
+  background: var(--accent-color);
+  color: #000;
+}
+.model-pill:not(.active):hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.model-nudge-btn {
+  margin-top: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: var(--accent-color);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  align-self: flex-start;
+}
+.model-nudge-btn:hover {
+  background: rgba(0, 229, 255, 0.22);
+  transform: translateY(-1px);
+}

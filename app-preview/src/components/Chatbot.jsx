@@ -36,6 +36,7 @@ const HINT_FLOWS = [
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFlow, setActiveFlow] = useState(null); // { flowIndex, step, answers }
+  const [selectedModel, setSelectedModel] = useState('anthropic');
   const [messages, setMessages] = useState([
     { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
   ]);
@@ -223,7 +224,7 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, context: contextStr, history: conversationHistory })
+        body: JSON.stringify({ message: userMessage, context: contextStr, history: conversationHistory, selectedModel })
       });
 
       if (!response.ok) {
@@ -250,12 +251,20 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
       setMessages(prev => [...prev, { role: 'model', text: displayText, workoutPlan }]);
     } catch (error) {
       console.error(error);
-      const friendlyError = {
-        overloaded: "The AI is a bit busy right now — please try again in a few seconds.",
-        rate_limit:  "Too many requests at once. Give it a moment and try again.",
-        api_error:   "Something went wrong on our end. Please try again.",
-      }[error.message] || "Couldn't reach the AI. Check your connection and try again.";
-      setMessages(prev => [...prev, { role: 'model', text: friendlyError }]);
+      let friendlyError, nudge;
+      if (error.message === 'overloaded' && selectedModel === 'anthropic') {
+        friendlyError = "Claude servers are busy right now. You can switch to Llama (Groq) for instant responses.";
+        nudge = 'switch-to-groq';
+      } else if (error.message === 'overloaded' && selectedModel === 'groq') {
+        friendlyError = "Llama servers are busy right now. Try switching back to Claude.";
+        nudge = 'switch-to-anthropic';
+      } else {
+        friendlyError = {
+          rate_limit: "Too many requests at once. Give it a moment and try again.",
+          api_error:  "Something went wrong on our end. Please try again.",
+        }[error.message] || "Couldn't reach the AI. Check your connection and try again.";
+      }
+      setMessages(prev => [...prev, { role: 'model', text: friendlyError, nudge }]);
     } finally {
       setIsLoading(false);
     }
@@ -312,6 +321,18 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
             <Bot size={20} className="text-accent" />
             <h3 className="font-semibold text-base">AI Assistant</h3>
           </div>
+          <div className="model-toggle">
+            <button
+              className={`model-pill ${selectedModel === 'anthropic' ? 'active' : ''}`}
+              onClick={() => setSelectedModel('anthropic')}
+              title="Claude (Anthropic)"
+            >Claude</button>
+            <button
+              className={`model-pill ${selectedModel === 'groq' ? 'active' : ''}`}
+              onClick={() => setSelectedModel('groq')}
+              title="Llama 3.3 (Groq)"
+            >Llama</button>
+          </div>
           <button onClick={toggleChat} className="btn-icon hover:bg-white/10" aria-label="Close Chat">
             <X size={20} />
           </button>
@@ -330,6 +351,16 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
                     msg.text
                   )}
                 </div>
+                {msg.nudge === 'switch-to-groq' && (
+                  <button className="model-nudge-btn" onClick={() => setSelectedModel('groq')}>
+                    Switch to Llama →
+                  </button>
+                )}
+                {msg.nudge === 'switch-to-anthropic' && (
+                  <button className="model-nudge-btn" onClick={() => setSelectedModel('anthropic')}>
+                    Try Claude again →
+                  </button>
+                )}
                 {msg.workoutPlan && (
                   <div className="workout-plan-card">
                     <p className="workout-plan-title">Workout Plan</p>
