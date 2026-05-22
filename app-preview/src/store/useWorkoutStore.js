@@ -232,7 +232,11 @@ export const useWorkoutStore = create(
       }
     }),
     {
-      name: 'workout-storage', // local storage key
+      name: 'workout-storage',
+      partialize: (state) => ({
+        history: state.history,
+        activeWorkout: state.activeWorkout,
+      }),
     }
   )
 );
