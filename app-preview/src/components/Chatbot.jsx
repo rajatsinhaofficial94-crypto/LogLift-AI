@@ -216,7 +216,10 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to fetch from API');
+        const raw = errorData.error || '';
+        if (raw.includes('overloaded')) throw new Error('overloaded');
+        if (raw.includes('429') || raw.includes('rate_limit')) throw new Error('rate_limit');
+        throw new Error('api_error');
       }
 
       const data = await response.json();
@@ -235,10 +238,12 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
       setMessages(prev => [...prev, { role: 'model', text: displayText, workoutPlan }]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, {
-        role: 'model',
-        text: `Error connecting to AI: ${error.message}`
-      }]);
+      const friendlyError = {
+        overloaded: "The AI is a bit busy right now — please try again in a few seconds.",
+        rate_limit:  "Too many requests at once. Give it a moment and try again.",
+        api_error:   "Something went wrong on our end. Please try again.",
+      }[error.message] || "Couldn't reach the AI. Check your connection and try again.";
+      setMessages(prev => [...prev, { role: 'model', text: friendlyError }]);
     } finally {
       setIsLoading(false);
     }
