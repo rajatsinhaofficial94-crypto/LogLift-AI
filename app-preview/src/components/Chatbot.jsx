@@ -5,6 +5,11 @@ import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 
 const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/g;
+const CHAT_STORAGE_KEY = 'loglift-chat-history';
+const CHAT_MAX_MESSAGES = 100;
+const DEFAULT_MESSAGES = [
+  { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
+];
 
 const HINT_FLOWS = [
   {
@@ -37,9 +42,16 @@ const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFlow, setActiveFlow] = useState(null); // { flowIndex, step, answers }
   const [selectedModel, setSelectedModel] = useState('anthropic');
-  const [messages, setMessages] = useState([
-    { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
-  ]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const stored = localStorage.getItem(CHAT_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return DEFAULT_MESSAGES;
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -70,6 +82,12 @@ const Chatbot = () => {
       setIsOpen(true);
     }
   };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages.slice(-CHAT_MAX_MESSAGES)));
+    } catch {}
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
