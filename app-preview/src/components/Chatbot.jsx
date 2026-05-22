@@ -125,7 +125,7 @@ const Chatbot = () => {
     const exerciseList = Object.entries(exerciseByPart)
       .filter(([part]) => !relevantParts || relevantParts.has(part))
       .map(([part, names]) => {
-        const limit = relevantParts ? 20 : 8;
+        const limit = relevantParts ? 30 : 8;
         // Always include name-matched exercises even if beyond the cap
         const prioritised = [
           ...names.filter(n => nameMatched.has(n)),
