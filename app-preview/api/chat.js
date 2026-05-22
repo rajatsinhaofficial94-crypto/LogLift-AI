@@ -10,12 +10,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const groqKey = process.env.GROQ_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const pineconeKey = process.env.PINECONE_API_KEY;
     const pineconeHost = process.env.PINECONE_HOST;
 
-    if (!groqKey) {
-      return res.status(500).json({ error: 'GROQ_API_KEY is missing' });
+    if (!anthropicKey) {
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY is missing' });
     }
 
     // --- Step 1: Query Pinecone for relevant book passages ---
