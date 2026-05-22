@@ -93,12 +93,12 @@ export default async function handler(req, res) {
 
       const isOverloaded = errorObj.error?.type === 'overloaded_error' || errorObj.type === 'overloaded_error';
       if (isOverloaded && attempt < maxAttempts) {
-        await new Promise(r => setTimeout(r, attempt * 1500));
+        await new Promise(r => setTimeout(r, attempt * 800));
         continue;
       }
 
-      console.error('Anthropic API Error:', errorText);
-      return res.status(response.status).json({ error: `Anthropic API Error: ${errorText}` });
+      console.error('Anthropic API Error:', response.status, errorText);
+      return res.status(response.status).json({ error: `Anthropic API Error: ${errorText}`, errorType: errorObj.error?.type || errorObj.type || 'unknown' });
     }
 
     const reply = data?.content?.[0]?.text || "I'm sorry, I couldn't generate a response.";
