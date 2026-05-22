@@ -61,7 +61,7 @@ export default async function handler(req, res) {
 
     // --- Step 3: Call Anthropic (with retry on overload) ---
     const anthropicBody = JSON.stringify({
-      model: 'claude-3-5-haiku-20241022',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 2048,
       system: systemContent,
       messages: [...history, { role: 'user', content: message }],
