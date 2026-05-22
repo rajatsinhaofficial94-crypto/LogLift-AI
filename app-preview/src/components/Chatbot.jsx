@@ -102,9 +102,16 @@ const Chatbot = () => {
   };
 
   const buildSystemContext = (userMessage = '') => {
-    // Detect relevant body parts from recent conversation + current message
     const recentText = messages.slice(-6).map(m => m.text).join(' ') + ' ' + userMessage;
     const relevantParts = getRelevantBodyParts(recentText);
+
+    // Find exercises whose name matches a specific type mentioned in the message
+    const words = recentText.toLowerCase().split(/\s+/);
+    const nameMatched = new Set(
+      exercises
+        .filter(ex => words.some(w => w.length > 3 && ex.name.toLowerCase().includes(w)))
+        .map(ex => ex.name)
+    );
 
     const exerciseByPart = {};
     exercises.forEach(ex => {
@@ -119,7 +126,12 @@ const Chatbot = () => {
       .filter(([part]) => !relevantParts || relevantParts.has(part))
       .map(([part, names]) => {
         const limit = relevantParts ? 20 : 8;
-        return `${part}: ${names.slice(0, limit).join(', ')}`;
+        // Always include name-matched exercises even if beyond the cap
+        const prioritised = [
+          ...names.filter(n => nameMatched.has(n)),
+          ...names.filter(n => !nameMatched.has(n)).slice(0, limit),
+        ];
+        return `${part}: ${prioritised.join(', ')}`;
       })
       .join('\n');
 
