@@ -118,8 +118,7 @@ const Chatbot = () => {
     const exerciseList = Object.entries(exerciseByPart)
       .filter(([part]) => !relevantParts || relevantParts.has(part))
       .map(([part, names]) => {
-        // Targeted query: send all for that muscle group. Broad/unspecified: cap at 8 per part.
-        const limit = relevantParts ? names.length : 8;
+        const limit = relevantParts ? 20 : 8;
         return `${part}: ${names.slice(0, limit).join(', ')}`;
       })
       .join('\n');
