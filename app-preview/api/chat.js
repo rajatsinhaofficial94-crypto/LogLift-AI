@@ -59,33 +59,49 @@ export default async function handler(req, res) {
     // --- Step 2: Build system prompt ---
     const systemContent = [context || '', ragContext].filter(Boolean).join('\n\n');
 
-    // --- Step 3: Call Anthropic ---
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2048,
-        system: systemContent,
-        messages: [
-          ...history,
-          { role: 'user', content: message },
-        ],
-      }),
+    // --- Step 3: Call Anthropic (with retry on overload) ---
+    const anthropicBody = JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: systemContent,
+      messages: [...history, { role: 'user', content: message }],
     });
 
-    if (!response.ok) {
+    const anthropicHeaders = {
+      'Content-Type': 'application/json',
+      'x-api-key': anthropicKey,
+      'anthropic-version': '2023-06-01',
+    };
+
+    let response, data;
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: anthropicHeaders,
+        body: anthropicBody,
+      });
+
+      if (response.ok) {
+        data = await response.json();
+        break;
+      }
+
       const errorText = await response.text();
+      let errorObj = {};
+      try { errorObj = JSON.parse(errorText); } catch {}
+
+      const isOverloaded = errorObj.error?.type === 'overloaded_error' || errorObj.type === 'overloaded_error';
+      if (isOverloaded && attempt < maxAttempts) {
+        await new Promise(r => setTimeout(r, attempt * 1500));
+        continue;
+      }
+
       console.error('Anthropic API Error:', errorText);
       return res.status(response.status).json({ error: `Anthropic API Error: ${errorText}` });
     }
 
-    const data = await response.json();
-    const reply = data.content?.[0]?.text || "I'm sorry, I couldn't generate a response.";
+    const reply = data?.content?.[0]?.text || "I'm sorry, I couldn't generate a response.";
 
     res.status(200).json({ reply, pineconeStatus });
   } catch (error) {
