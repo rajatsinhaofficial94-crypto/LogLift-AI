@@ -6,14 +6,36 @@ import { useWorkoutStore } from '../store/useWorkoutStore';
 
 const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/g;
 
-const HINT_PROMPTS = [
-  { label: "Create my training plan", prompt: "Create a training plan for me" },
-  { label: "Get exercise advice", prompt: "What exercises should I focus on?" },
-  { label: "Review my progress", prompt: "Review my workout progress" },
+const HINT_FLOWS = [
+  {
+    label: "Create my training plan",
+    steps: [
+      { question: "What's your goal?", options: ["Build muscle", "Lose fat", "Improve fitness"] },
+      { question: "Equipment available?", options: ["Full gym", "Dumbbells only", "Bodyweight"] },
+      { question: "Days per week?", options: ["3 days", "4 days", "5 days"] },
+    ],
+    buildPrompt: (a) => `Create a training plan for me. Goal: ${a[0]}. Equipment: ${a[1]}. Availability: ${a[2]} per week.`,
+  },
+  {
+    label: "Get exercise advice",
+    steps: [
+      { question: "Which muscle group?", options: ["Chest & Back", "Legs & Glutes", "Shoulders & Arms", "Full Body"] },
+      { question: "Any equipment limits?", options: ["Full gym", "Dumbbells only", "Bodyweight"] },
+    ],
+    buildPrompt: (a) => `Recommend the best exercises for ${a[0]} with ${a[1].toLowerCase()} available.`,
+  },
+  {
+    label: "Review my progress",
+    steps: [
+      { question: "What to focus on?", options: ["Volume & tonnage", "Strength gains", "Consistency"] },
+    ],
+    buildPrompt: (a) => `Review my workout progress and give me feedback, focusing on ${a[0].toLowerCase()}.`,
+  },
 ];
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeFlow, setActiveFlow] = useState(null); // { flowIndex, step, answers }
   const [messages, setMessages] = useState([
     { role: 'model', text: "Hi! I'm your AI workout assistant. Ask me to plan a workout, suggest exercise substitutions, or review your progress." }
   ]);
@@ -32,9 +54,20 @@ const Chatbot = () => {
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const handleHintClick = (prompt) => {
-    setInput(prompt);
-    setIsOpen(true);
+  const handleChipClick = (flowIndex) => {
+    setActiveFlow({ flowIndex, step: 0, answers: [] });
+  };
+
+  const handleFlowOption = (option) => {
+    const flow = HINT_FLOWS[activeFlow.flowIndex];
+    const answers = [...activeFlow.answers, option];
+    if (answers.length < flow.steps.length) {
+      setActiveFlow({ ...activeFlow, step: activeFlow.step + 1, answers });
+    } else {
+      setInput(flow.buildPrompt(answers));
+      setActiveFlow(null);
+      setIsOpen(true);
+    }
   };
 
   const scrollToBottom = () => {
@@ -216,17 +249,36 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
     <>
       {isHome && !isOpen && (
         <div className="chatbot-hints">
-          {HINT_PROMPTS.map((hint, i) => (
-            <button
-              key={i}
-              className="chatbot-hint-chip"
-              style={{ animationDelay: `${i * 0.06}s` }}
-              onClick={() => handleHintClick(hint.prompt)}
-            >
-              {hint.label}
-              <span className="chatbot-hint-arrow">→</span>
-            </button>
-          ))}
+          {activeFlow ? (
+            <div className="chatbot-flow">
+              <div className="chatbot-flow-header">
+                <button className="chatbot-flow-back" onClick={() => setActiveFlow(null)}>← Back</button>
+                <span className="chatbot-flow-step">{activeFlow.step + 1}/{HINT_FLOWS[activeFlow.flowIndex].steps.length}</span>
+              </div>
+              <p className="chatbot-flow-question">
+                {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].question}
+              </p>
+              <div className="chatbot-flow-options">
+                {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].options.map((opt, i) => (
+                  <button key={i} className="chatbot-flow-option" onClick={() => handleFlowOption(opt)}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            HINT_FLOWS.map((flow, i) => (
+              <button
+                key={i}
+                className="chatbot-hint-chip"
+                style={{ animationDelay: `${i * 0.06}s` }}
+                onClick={() => handleChipClick(i)}
+              >
+                {flow.label}
+                <span className="chatbot-hint-arrow">→</span>
+              </button>
+            ))
+          )}
         </div>
       )}
 
