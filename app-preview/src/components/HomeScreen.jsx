@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
-import { Play, Activity, TrendingUp, Bot, Info, X } from 'lucide-react';
+import { Play, Activity, TrendingUp, Bot, X } from 'lucide-react';
 import WorkoutDetail from './WorkoutDetail';
 
 function HomeScreen() {
@@ -61,17 +61,7 @@ function HomeScreen() {
     <div className="flex-col gap-4 animate-fade-in">
       <div className="glass-header" style={{ position: 'relative', background: 'transparent', padding: '0 0 16px 0', border: 'none' }}>
         <div style={{ flex: 1 }}>
-          <div className="flex items-center gap-2">
-            <h1 className="title title-gradient tracking-tight">LogLift</h1>
-            <button
-              onClick={() => setShowReadme(true)}
-              className="btn-icon"
-              style={{ marginTop: '2px', opacity: 0.6 }}
-              aria-label="About this app"
-            >
-              <Info size={16} />
-            </button>
-          </div>
+          <h1 className="title title-gradient tracking-tight">LogLift</h1>
           <p className="text-muted text-xs mt-1 opacity-80">Your strength. Coached by AI. Backed by science.</p>
         </div>
         <div className="shrink-0 overflow-hidden shadow-lg border border-white/10 bg-white/5 flex items-center justify-center" style={{ width: '64px', height: '64px', borderRadius: '16px' }}>
@@ -153,6 +143,12 @@ function HomeScreen() {
           onClose={() => setSelectedWorkoutForDetail(null)}
         />
       )}
+
+      <div className="flex justify-center mt-6 mb-2">
+        <button className="readme-trigger" onClick={() => setShowReadme(true)}>
+          Read Me — For Recruiters
+        </button>
+      </div>
 
       {showReadme && (
         <div className="readme-overlay" onClick={() => setShowReadme(false)}>

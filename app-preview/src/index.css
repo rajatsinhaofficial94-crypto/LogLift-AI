@@ -908,6 +908,23 @@ input::placeholder {
   font-weight: 600;
 }
 
+.readme-trigger {
+  background: none;
+  border: none;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.45;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255,255,255,0.2);
+  transition: opacity 0.2s;
+}
+.readme-trigger:hover {
+  opacity: 0.8;
+}
+
 .ai-coach-btn {
   display: flex;
   align-items: center;
