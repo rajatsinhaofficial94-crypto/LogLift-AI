@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 import { Play, Activity, TrendingUp, Bot, X } from 'lucide-react';
@@ -150,7 +151,7 @@ function HomeScreen() {
         </button>
       </div>
 
-      {showReadme && (
+      {showReadme && ReactDOM.createPortal(
         <div className="readme-overlay" onClick={() => setShowReadme(false)}>
           <div className="readme-modal glass-panel" onClick={e => e.stopPropagation()}>
             <div className="readme-header">
@@ -203,7 +204,8 @@ function HomeScreen() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
