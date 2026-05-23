@@ -160,12 +160,6 @@ function HomeScreen() {
               </button>
             </div>
             <div className="readme-body">
-              <button
-                className="sample-data-btn"
-                onClick={() => { loadSampleData(); setShowReadme(false); }}
-              >
-                Load Sample Workout Sessions
-              </button>
               <p className="readme-intro">
                 LogLift is a full-stack AI-powered bodybuilding and strength training app built as a portfolio project to demonstrate modern web development and AI integration.
               </p>
@@ -190,6 +184,12 @@ function HomeScreen() {
                   <li>Per-exercise history and volume tracking with per-session edit support</li>
                   <li>Workout data persists locally — survives browser restarts and app updates</li>
                 </ul>
+                <button
+                  className="sample-data-btn"
+                  onClick={() => { loadSampleData(); setShowReadme(false); }}
+                >
+                  Load Sample Workout Sessions
+                </button>
               </div>
 
               <div className="readme-section">
