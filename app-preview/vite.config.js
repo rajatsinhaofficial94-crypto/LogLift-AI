@@ -9,6 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo.png', 'icon-192.png', 'icon-512.png'],
       workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
