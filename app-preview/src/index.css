@@ -841,14 +841,15 @@ input::placeholder {
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
-  z-index: 200;
+  z-index: 1100;
   display: flex;
   align-items: flex-end;
   padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 70px));
 }
 .readme-modal {
   width: 100%;
-  max-height: 82vh;
+  max-height: 78vh;
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
