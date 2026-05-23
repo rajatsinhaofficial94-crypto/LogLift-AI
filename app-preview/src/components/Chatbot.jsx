@@ -5,6 +5,25 @@ import ReactMarkdown from 'react-markdown';
 import { useWorkoutStore } from '../store/useWorkoutStore';
 
 const WORKOUT_PLAN_REGEX = /```workout-plan\n([\s\S]*?)\n```/g;
+
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const linkifyExercises = (text, exercises) => {
+  if (!text || !exercises?.length) return text;
+  const lowerText = text.toLowerCase();
+  const present = exercises
+    .filter(ex => lowerText.includes(ex.name.toLowerCase()))
+    .sort((a, b) => b.name.length - a.name.length);
+  if (!present.length) return text;
+  const nameToCanonical = Object.fromEntries(present.map(ex => [ex.name.toLowerCase(), ex.name]));
+  const pattern = present.map(ex => escapeRegex(ex.name)).join('|');
+  const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+  return text.replace(regex, (match) => {
+    const canonical = nameToCanonical[match.toLowerCase()];
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(canonical + ' tutorial')}`;
+    return `[${match}](${url})`;
+  });
+};
 const CHAT_STORAGE_KEY = 'loglift-chat-history';
 const CHAT_MAX_MESSAGES = 100;
 const DEFAULT_MESSAGES = [
@@ -363,7 +382,7 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
                 <div className={`message-bubble whitespace-pre-wrap ${msg.role === 'user' ? 'user' : 'model'}`}>
                   {msg.role === 'model' ? (
                     <div className="prose prose-sm prose-invert max-w-none">
-                      <ReactMarkdown>{msg.text}</ReactMarkdown>
+                      <ReactMarkdown>{linkifyExercises(msg.text, exercises)}</ReactMarkdown>
                     </div>
                   ) : (
                     msg.text
