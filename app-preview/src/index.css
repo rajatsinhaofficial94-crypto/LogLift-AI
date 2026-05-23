@@ -613,6 +613,13 @@ input::placeholder {
   flex-direction: column;
   gap: 12px;
 }
+.chatbot-messages .prose a {
+  color: var(--accent-color);
+  text-decoration-color: rgba(0, 229, 255, 0.4);
+}
+.chatbot-messages .prose a:hover {
+  text-decoration-color: var(--accent-color);
+}
 
 .message-bubble-wrapper {
   display: flex;

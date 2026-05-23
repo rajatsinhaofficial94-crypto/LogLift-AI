@@ -17,7 +17,8 @@ const linkifyExercises = (text, exercises) => {
   if (!present.length) return text;
   const nameToCanonical = Object.fromEntries(present.map(ex => [ex.name.toLowerCase(), ex.name]));
   const pattern = present.map(ex => escapeRegex(ex.name)).join('|');
-  const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
+  // Use lookahead/lookbehind instead of \b so names ending in ) or ' also match correctly
+  const regex = new RegExp(`(?<![a-zA-Z0-9])(${pattern})(?![a-zA-Z0-9])`, 'gi');
   return text.replace(regex, (match) => {
     const canonical = nameToCanonical[match.toLowerCase()];
     const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(canonical + ' tutorial')}`;
