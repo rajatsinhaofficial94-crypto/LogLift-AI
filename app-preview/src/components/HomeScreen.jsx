@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
-import { Play, Activity, TrendingUp } from 'lucide-react';
+import { Play, Activity, TrendingUp, Bot } from 'lucide-react';
 import WorkoutDetail from './WorkoutDetail';
 
 function HomeScreen() {
@@ -86,6 +86,13 @@ function HomeScreen() {
       </div>
 
       <div className="flex-col gap-2 mt-4">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('open-chatbot'))}
+          className="ai-coach-btn w-full p-4"
+        >
+          <Bot size={20} />
+          Talk to Your AI Coach
+        </button>
         {activeWorkout ? (
           <button onClick={handleStartWorkout} className="btn btn-primary w-full p-4" style={{ fontSize: '1.1rem' }}>
             <Play size={20} fill="currentColor" /> Resume Workout

@@ -115,6 +115,12 @@ const Chatbot = () => {
     } catch {}
   }, [messages]);
 
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('open-chatbot', handler);
+    return () => window.removeEventListener('open-chatbot', handler);
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };

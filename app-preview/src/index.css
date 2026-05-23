@@ -835,3 +835,28 @@ input::placeholder {
   background: rgba(0, 229, 255, 0.22);
   transform: translateY(-1px);
 }
+
+.ai-coach-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: #000;
+  background: var(--accent-gradient);
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.3), 0 4px 16px rgba(0,0,0,0.4);
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.01em;
+}
+.ai-coach-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 0 32px rgba(0, 229, 255, 0.45), 0 6px 20px rgba(0,0,0,0.4);
+}
+.ai-coach-btn:active {
+  transform: scale(0.98);
+}
