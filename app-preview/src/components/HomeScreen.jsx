@@ -6,7 +6,7 @@ import WorkoutDetail from './WorkoutDetail';
 
 function HomeScreen() {
   const navigate = useNavigate();
-  const { startWorkout, activeWorkout, history } = useWorkoutStore();
+  const { startWorkout, activeWorkout, history, loadSampleData } = useWorkoutStore();
 
   const [selectedWorkoutForDetail, setSelectedWorkoutForDetail] = React.useState(null);
   const [showReadme, setShowReadme] = React.useState(false);
@@ -160,6 +160,12 @@ function HomeScreen() {
               </button>
             </div>
             <div className="readme-body">
+              <button
+                className="sample-data-btn"
+                onClick={() => { loadSampleData(); setShowReadme(false); }}
+              >
+                Load Sample Workout Sessions
+              </button>
               <p className="readme-intro">
                 LogLift is a full-stack AI-powered bodybuilding and strength training app built as a portfolio project to demonstrate modern web development and AI integration.
               </p>

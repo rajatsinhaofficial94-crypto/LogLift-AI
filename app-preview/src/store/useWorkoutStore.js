@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import exercisesData from '../data/exercises.json';
+import { generateSampleSessions } from '../data/sampleSessions';
 
 // Initialize store with persistent storage
 export const useWorkoutStore = create(
@@ -210,6 +211,10 @@ export const useWorkoutStore = create(
         });
 
         set({ activeWorkout: { ...activeWorkout, workoutExercises: updatedExercises } });
+      },
+
+      loadSampleData: () => {
+        set({ history: generateSampleSessions() });
       },
 
       // Analytics helper
