@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWorkoutStore } from '../store/useWorkoutStore';
-import { Play, Activity, TrendingUp, Bot } from 'lucide-react';
+import { Play, Activity, TrendingUp, Bot, Info, X } from 'lucide-react';
 import WorkoutDetail from './WorkoutDetail';
 
 function HomeScreen() {
@@ -9,6 +9,7 @@ function HomeScreen() {
   const { startWorkout, activeWorkout, history } = useWorkoutStore();
 
   const [selectedWorkoutForDetail, setSelectedWorkoutForDetail] = React.useState(null);
+  const [showReadme, setShowReadme] = React.useState(false);
 
   const handleStartWorkout = () => {
     if (activeWorkout) {
@@ -59,8 +60,18 @@ function HomeScreen() {
   return (
     <div className="flex-col gap-4 animate-fade-in">
       <div className="glass-header" style={{ position: 'relative', background: 'transparent', padding: '0 0 16px 0', border: 'none' }}>
-        <div>
-          <h1 className="title title-gradient tracking-tight">LogLift</h1>
+        <div style={{ flex: 1 }}>
+          <div className="flex items-center gap-2">
+            <h1 className="title title-gradient tracking-tight">LogLift</h1>
+            <button
+              onClick={() => setShowReadme(true)}
+              className="btn-icon"
+              style={{ marginTop: '2px', opacity: 0.6 }}
+              aria-label="About this app"
+            >
+              <Info size={16} />
+            </button>
+          </div>
           <p className="text-muted text-xs mt-1 opacity-80">Your strength. Coached by AI. Backed by science.</p>
         </div>
         <div className="shrink-0 overflow-hidden shadow-lg border border-white/10 bg-white/5 flex items-center justify-center" style={{ width: '64px', height: '64px', borderRadius: '16px' }}>
@@ -137,10 +148,60 @@ function HomeScreen() {
       )}
 
       {selectedWorkoutForDetail && (
-        <WorkoutDetail 
-          workout={selectedWorkoutForDetail} 
-          onClose={() => setSelectedWorkoutForDetail(null)} 
+        <WorkoutDetail
+          workout={selectedWorkoutForDetail}
+          onClose={() => setSelectedWorkoutForDetail(null)}
         />
+      )}
+
+      {showReadme && (
+        <div className="readme-overlay" onClick={() => setShowReadme(false)}>
+          <div className="readme-modal glass-panel" onClick={e => e.stopPropagation()}>
+            <div className="readme-header">
+              <h2 className="font-bold text-base title-gradient">About LogLift AI</h2>
+              <button className="btn-icon hover:bg-white/10" onClick={() => setShowReadme(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="readme-body">
+              <p className="readme-intro">
+                LogLift is a full-stack AI-powered bodybuilding and strength training app built as a portfolio project to demonstrate modern web development and AI integration.
+              </p>
+
+              <div className="readme-section">
+                <h3>🤖 AI Coach</h3>
+                <ul>
+                  <li>Powered by <strong>Claude (Anthropic)</strong> with <strong>Llama 3.3 (Groq)</strong> as a fallback — user-switchable via toggle</li>
+                  <li>RAG pipeline using <strong>Pinecone</strong> vector database — responses are grounded in two expert strength training books for evidence-based advice</li>
+                  <li>Generates personalised workout plans, exercise substitutions, and progress analysis based on the user's logged history</li>
+                  <li>Workout plans render as interactive tables and can be started with one tap</li>
+                  <li>Exercise names in responses are hyperlinked to YouTube tutorial searches</li>
+                  <li>Chat history persists across sessions via localStorage</li>
+                </ul>
+              </div>
+
+              <div className="readme-section">
+                <h3>🏋️ Workout Tracker</h3>
+                <ul>
+                  <li>Full exercise database with hundreds of movements across all muscle groups</li>
+                  <li>Log sets, reps, weight, and RIR (Reps in Reserve) per set</li>
+                  <li>Per-exercise history and volume tracking with per-session edit support</li>
+                  <li>Workout data persists locally — survives browser restarts and app updates</li>
+                </ul>
+              </div>
+
+              <div className="readme-section">
+                <h3>⚙️ Tech Stack</h3>
+                <ul>
+                  <li><strong>Frontend:</strong> React + Vite, Zustand, Tailwind CSS, PWA (installable)</li>
+                  <li><strong>Backend:</strong> Vercel Serverless Functions</li>
+                  <li><strong>AI:</strong> Anthropic Claude API, Groq API, Pinecone vector DB</li>
+                  <li><strong>Deployment:</strong> Vercel (CI/CD via GitHub)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
