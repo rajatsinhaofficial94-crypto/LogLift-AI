@@ -61,7 +61,7 @@ function HomeScreen() {
       <div className="glass-header" style={{ position: 'relative', background: 'transparent', padding: '0 0 16px 0', border: 'none' }}>
         <div>
           <h1 className="title title-gradient tracking-tight">LogLift</h1>
-          <p className="text-muted text-xs mt-1 opacity-80">For those who know what they are doing</p>
+          <p className="text-muted text-xs mt-1 opacity-80">Your strength. Coached by AI. Backed by science.</p>
         </div>
         <div className="shrink-0 overflow-hidden shadow-lg border border-white/10 bg-white/5 flex items-center justify-center" style={{ width: '64px', height: '64px', borderRadius: '16px' }}>
           <img src="/logo.png" alt="LogLift Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.5)' }} />
