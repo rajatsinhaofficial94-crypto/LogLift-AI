@@ -409,8 +409,8 @@ input::placeholder {
 /* Set Input styling */
 .set-row {
   display: grid;
-  grid-template-columns: 40px 1fr 1fr 1fr 40px;
-  gap: 8px;
+  grid-template-columns: 32px 1fr 1fr 1fr 40px 28px;
+  gap: 6px;
   align-items: center;
   margin-bottom: 8px;
 }

@@ -231,6 +231,7 @@ function ActiveWorkout() {
               <div className="set-header">Weight</div>
               <div className="set-header">RIR</div>
               <div className="set-header">Done</div>
+              <div></div>
             </div>
 
             {we.sets.map((set, setIndex) => (
@@ -266,6 +267,14 @@ function ActiveWorkout() {
                   style={{ background: set.completed ? 'rgba(0, 229, 255, 0.2)' : 'transparent', borderColor: set.completed ? 'var(--accent-color)' : 'var(--border-color)', color: set.completed ? 'var(--accent-color)' : 'var(--text-muted)' }}
                 >
                   <Check size={18} strokeWidth={set.completed ? 3 : 2} />
+                </button>
+                <button
+                  onClick={() => removeSet(we.workoutExerciseId, set.id)}
+                  className="btn-icon flex justify-center items-center text-muted hover:text-red-400 transition-colors"
+                  style={{ fontSize: '1rem', lineHeight: 1 }}
+                  aria-label="Remove set"
+                >
+                  ×
                 </button>
               </div>
             ))}
