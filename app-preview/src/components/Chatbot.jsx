@@ -10,18 +10,24 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const linkifyExercises = (text, exercises) => {
   if (!text || !exercises?.length) return text;
+  // Build variants: full name + stripped trailing parenthetical
+  // e.g. "Barbell Military Press (Overhead press)" also matches as "Barbell Military Press"
+  const variants = [];
+  exercises.forEach(ex => {
+    variants.push(ex.name);
+    const stripped = ex.name.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (stripped !== ex.name && stripped.length > 3) variants.push(stripped);
+  });
+  const unique = [...new Set(variants)];
   const lowerText = text.toLowerCase();
-  const present = exercises
-    .filter(ex => lowerText.includes(ex.name.toLowerCase()))
-    .sort((a, b) => b.name.length - a.name.length);
+  const present = unique
+    .filter(name => lowerText.includes(name.toLowerCase()))
+    .sort((a, b) => b.length - a.length);
   if (!present.length) return text;
-  const nameToCanonical = Object.fromEntries(present.map(ex => [ex.name.toLowerCase(), ex.name]));
-  const pattern = present.map(ex => escapeRegex(ex.name)).join('|');
-  // Use lookahead/lookbehind instead of \b so names ending in ) or ' also match correctly
+  const pattern = present.map(name => escapeRegex(name)).join('|');
   const regex = new RegExp(`(?<![a-zA-Z0-9])(${pattern})(?![a-zA-Z0-9])`, 'gi');
   return text.replace(regex, (match) => {
-    const canonical = nameToCanonical[match.toLowerCase()];
-    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(canonical + ' tutorial')}`;
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(match + ' tutorial')}`;
     return `[${match}](${url})`;
   });
 };
