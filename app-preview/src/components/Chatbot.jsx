@@ -50,7 +50,7 @@ const HINT_FLOWS = [
   {
     label: "Get exercise advice",
     steps: [
-      { question: "Which muscle group?", options: ["Chest & Back", "Legs & Glutes", "Shoulders & Arms", "Full Body"] },
+      { question: "Which muscle group?", options: ["Chest", "Back & Wings", "Legs & Glutes", "Shoulders & Arms"] },
       { question: "Any equipment limits?", options: ["Full gym", "Dumbbells only", "Bodyweight"] },
     ],
     buildPrompt: (a) => `Recommend the best exercises for ${a[0]} with ${a[1].toLowerCase()} available.`,
