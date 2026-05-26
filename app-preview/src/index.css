@@ -489,6 +489,8 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
 }
 .chatbot-flow-option {
   background: rgba(255,255,255,0.07);
