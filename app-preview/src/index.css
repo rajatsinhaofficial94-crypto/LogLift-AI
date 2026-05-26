@@ -447,10 +447,12 @@ input::placeholder {
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   animation: chip-fade-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-.chat-suggestion-chip:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #000;
+@media (hover: hover) {
+  .chat-suggestion-chip:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
 }
 
 /* In-chat flow UI */
@@ -506,10 +508,12 @@ input::placeholder {
   text-align: left;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
-.chatbot-flow-option:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #000;
+@media (hover: hover) {
+  .chatbot-flow-option:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+  }
 }
 
 /* Chatbot UI */
