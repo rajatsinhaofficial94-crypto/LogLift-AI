@@ -488,18 +488,19 @@ input::placeholder {
 }
 .chatbot-flow-options {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
 }
 .chatbot-flow-option {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.15);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 6px 14px;
+  padding: 9px 14px;
   cursor: pointer;
+  text-align: left;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 .chatbot-flow-option:hover {
