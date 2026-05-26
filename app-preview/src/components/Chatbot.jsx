@@ -122,7 +122,7 @@ const Chatbot = () => {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsPulsing(false), 5000);
+    const t = setTimeout(() => setIsPulsing(false), 10000);
     return () => clearTimeout(t);
   }, []);
 
