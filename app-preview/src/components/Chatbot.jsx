@@ -358,7 +358,7 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
           </button>
         </div>
 
-        <div className={`chatbot-messages ${activeFlow ? 'flow-active' : ''}`}>
+        <div className="chatbot-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message-bubble-wrapper ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className="flex flex-col gap-2 max-w-[85%]">
