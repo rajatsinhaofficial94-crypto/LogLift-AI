@@ -111,7 +111,7 @@ input::placeholder {
   justify-content: center;
   gap: 8px;
   padding: 12px 24px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-weight: 600;
   font-family: var(--font-main);
   cursor: pointer;
