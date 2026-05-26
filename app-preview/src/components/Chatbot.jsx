@@ -66,6 +66,7 @@ const HINT_FLOWS = [
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(true);
   const [activeFlow, setActiveFlow] = useState(null); // { flowIndex, step, answers }
   const [selectedModel, setSelectedModel] = useState('anthropic');
   const [messages, setMessages] = useState(() => {
@@ -105,7 +106,6 @@ const Chatbot = () => {
     } else {
       setInput(flow.buildPrompt(answers));
       setActiveFlow(null);
-      setIsOpen(true);
     }
   };
 
@@ -119,6 +119,11 @@ const Chatbot = () => {
     const handler = () => setIsOpen(true);
     window.addEventListener('open-chatbot', handler);
     return () => window.removeEventListener('open-chatbot', handler);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsPulsing(false), 5000);
+    return () => clearTimeout(t);
   }, []);
 
   const scrollToBottom = () => {
@@ -322,43 +327,8 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
 
   return (
     <>
-      {isHome && !isOpen && (
-        <div className="chatbot-hints">
-          {activeFlow ? (
-            <div className="chatbot-flow">
-              <div className="chatbot-flow-header">
-                <button className="chatbot-flow-back" onClick={() => setActiveFlow(null)}>← Back</button>
-                <span className="chatbot-flow-step">{activeFlow.step + 1}/{HINT_FLOWS[activeFlow.flowIndex].steps.length}</span>
-              </div>
-              <p className="chatbot-flow-question">
-                {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].question}
-              </p>
-              <div className="chatbot-flow-options">
-                {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].options.map((opt, i) => (
-                  <button key={i} className="chatbot-flow-option" onClick={() => handleFlowOption(opt)}>
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            HINT_FLOWS.map((flow, i) => (
-              <button
-                key={i}
-                className="chatbot-hint-chip"
-                style={{ animationDelay: `${i * 0.06}s` }}
-                onClick={() => handleChipClick(i)}
-              >
-                {flow.label}
-                <span className="chatbot-hint-arrow">→</span>
-              </button>
-            ))
-          )}
-        </div>
-      )}
-
       <button
-        className={`chatbot-fab ${isOpen ? 'hidden' : ''}`}
+        className={`chatbot-fab ${isOpen ? 'hidden' : ''} ${isPulsing ? 'chatbot-fab-pulse' : ''}`}
         onClick={toggleChat}
         aria-label="Open AI Assistant"
       >
@@ -453,6 +423,20 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
               </div>
             </div>
           ))}
+          {messages.length === 1 && !activeFlow && !isLoading && (
+            <div className="chat-suggestions">
+              {HINT_FLOWS.map((flow, i) => (
+                <button
+                  key={i}
+                  className="chat-suggestion-chip"
+                  style={{ animationDelay: `${i * 0.07}s` }}
+                  onClick={() => handleChipClick(i)}
+                >
+                  {flow.label} →
+                </button>
+              ))}
+            </div>
+          )}
           {isLoading && (
             <div className="message-bubble-wrapper justify-start">
               <div className="message-bubble model opacity-70">Thinking...</div>
@@ -461,6 +445,24 @@ List only the main working exercises in the JSON (exclude warm-up and cool-down)
           <div ref={messagesEndRef} />
         </div>
 
+        {activeFlow && (
+          <div className="chatbot-flow-inline">
+            <div className="chatbot-flow-header">
+              <button className="chatbot-flow-back" onClick={() => setActiveFlow(null)}>← Back</button>
+              <span className="chatbot-flow-step">{activeFlow.step + 1}/{HINT_FLOWS[activeFlow.flowIndex].steps.length}</span>
+            </div>
+            <p className="chatbot-flow-question">
+              {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].question}
+            </p>
+            <div className="chatbot-flow-options">
+              {HINT_FLOWS[activeFlow.flowIndex].steps[activeFlow.step].options.map((opt, i) => (
+                <button key={i} className="chatbot-flow-option" onClick={() => handleFlowOption(opt)}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <form className="chatbot-input-area" onSubmit={handleSend}>
           <input
             type="text"
